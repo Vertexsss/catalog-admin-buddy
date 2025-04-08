@@ -6,6 +6,8 @@ import PageHeader from "@/components/common/PageHeader";
 import FormModal from "@/components/common/FormModal";
 import ProductForm from "./ProductForm";
 import { getProductColumns } from "./productColumns";
+import { initialCategories, Category } from "@/data/initialCategories";
+import CategoryManager from "./CategoryManager";
 
 interface ProductManagerProps {
   initialProducts: Product[];
@@ -13,6 +15,7 @@ interface ProductManagerProps {
 
 const ProductManager = ({ initialProducts }: ProductManagerProps) => {
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState<ProductFormData>({
@@ -30,7 +33,7 @@ const ProductManager = ({ initialProducts }: ProductManagerProps) => {
     setCurrentProduct(null);
     setFormData({
       name: "",
-      category: "",
+      category: categories.length > 0 ? categories[0].name : "",
       price: "",
       stock: "",
       description: "",
@@ -60,6 +63,10 @@ const ProductManager = ({ initialProducts }: ProductManagerProps) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
     setFormData({ ...formData, [name]: value });
   };
 
@@ -115,6 +122,7 @@ const ProductManager = ({ initialProducts }: ProductManagerProps) => {
         title="Catalog Management"
         description="Manage your product catalog"
         onAddNew={handleAddNew}
+        extraButton={<CategoryManager categories={categories} setCategories={setCategories} />}
       />
 
       <DataTable
@@ -133,6 +141,8 @@ const ProductManager = ({ initialProducts }: ProductManagerProps) => {
         <ProductForm 
           formData={formData}
           onChange={handleInputChange}
+          categories={categories}
+          onSelectChange={handleSelectChange}
         />
       </FormModal>
     </div>

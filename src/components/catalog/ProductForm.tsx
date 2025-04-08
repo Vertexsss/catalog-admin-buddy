@@ -3,13 +3,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ProductFormData } from "@/types/product";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Category } from "@/data/initialCategories";
 
 interface ProductFormProps {
   formData: ProductFormData;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  categories: Category[];
+  onSelectChange?: (name: string, value: string) => void;
 }
 
-const ProductForm = ({ formData, onChange }: ProductFormProps) => {
+const ProductForm = ({ formData, onChange, categories, onSelectChange }: ProductFormProps) => {
+  const handleSelectChange = (value: string) => {
+    if (onSelectChange) {
+      onSelectChange("category", value);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -26,14 +42,22 @@ const ProductForm = ({ formData, onChange }: ProductFormProps) => {
 
       <div>
         <Label htmlFor="category">Category</Label>
-        <Input
-          id="category"
-          name="category"
-          value={formData.category}
-          onChange={onChange}
-          placeholder="Enter product category"
-          required
-        />
+        <Select 
+          name="category" 
+          value={formData.category} 
+          onValueChange={handleSelectChange}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.name}>
+                {category.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
