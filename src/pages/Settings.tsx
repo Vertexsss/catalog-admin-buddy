@@ -7,8 +7,11 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PageHeader from "@/components/common/PageHeader";
 import { toast } from "sonner";
+import { useTheme } from "@/context/ThemeProvider";
 
 const Settings = () => {
+  const { isDarkMode, toggleDarkMode } = useTheme();
+  
   const [apiSettings, setApiSettings] = useState({
     apiUrl: "http://localhost:8000/api/v1/",
     apiKey: "demo-api-key-12345",
@@ -19,7 +22,7 @@ const Settings = () => {
     siteName: "Catalog Admin",
     itemsPerPage: "10",
     enableNotifications: true,
-    darkMode: false,
+    darkMode: isDarkMode,
   });
 
   const handleApiChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +42,12 @@ const Settings = () => {
   };
 
   const handleSwitchChange = (name: string, checked: boolean) => {
-    setGeneralSettings({ ...generalSettings, [name]: checked });
+    if (name === "darkMode") {
+      toggleDarkMode();
+      setGeneralSettings({ ...generalSettings, darkMode: checked });
+    } else {
+      setGeneralSettings({ ...generalSettings, [name]: checked });
+    }
   };
 
   const handleApiSubmit = (e: React.FormEvent) => {
@@ -59,9 +67,9 @@ const Settings = () => {
         description="Configure your application settings"
       />
 
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className={`rounded-lg border overflow-hidden ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
         <Tabs defaultValue="general" className="w-full">
-          <TabsList className="w-full border-b border-gray-200 bg-gray-50">
+          <TabsList className={`w-full border-b ${isDarkMode ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-gray-50'}`}>
             <TabsTrigger value="general" className="flex-1">General</TabsTrigger>
             <TabsTrigger value="api" className="flex-1">API Configuration</TabsTrigger>
           </TabsList>
@@ -95,7 +103,7 @@ const Settings = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <Label htmlFor="enableNotifications">Enable Notifications</Label>
-                    <p className="text-sm text-gray-500">Receive email notifications for important events</p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Receive email notifications for important events</p>
                   </div>
                   <Switch
                     id="enableNotifications"
@@ -107,11 +115,11 @@ const Settings = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <Label htmlFor="darkMode">Dark Mode</Label>
-                    <p className="text-sm text-gray-500">Use dark theme for the admin interface</p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Use dark theme for the admin interface</p>
                   </div>
                   <Switch
                     id="darkMode"
-                    checked={generalSettings.darkMode}
+                    checked={isDarkMode}
                     onCheckedChange={(checked) => handleSwitchChange("darkMode", checked)}
                   />
                 </div>
@@ -133,7 +141,7 @@ const Settings = () => {
                     onChange={handleApiChange}
                     placeholder="Enter API URL"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     The base URL for the Django API
                   </p>
                 </div>
@@ -163,7 +171,7 @@ const Settings = () => {
                 </div>
 
                 <div className="pt-4">
-                  <h3 className="text-sm font-medium mb-2">Connection Test</h3>
+                  <h3 className={`text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : ''}`}>Connection Test</h3>
                   <Button type="button" variant="outline">
                     Test Connection
                   </Button>
