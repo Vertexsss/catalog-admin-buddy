@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import DataTable from "@/components/common/DataTable";
@@ -9,7 +8,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 
-const initialProducts = [
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: string;
+  stock: number;
+  status: string;
+  description?: string;
+}
+
+const initialProducts: Product[] = [
   {
     id: 1,
     name: "T-Shirt",
@@ -53,9 +62,9 @@ const initialProducts = [
 ];
 
 const Catalog = () => {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState<any>(null);
+  const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -102,7 +111,7 @@ const Catalog = () => {
     setModalOpen(true);
   };
 
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: Product) => {
     setCurrentProduct(product);
     setFormData({
       name: product.name,
@@ -115,7 +124,7 @@ const Catalog = () => {
     setModalOpen(true);
   };
 
-  const handleDelete = (product: any) => {
+  const handleDelete = (product: Product) => {
     if (window.confirm(`Are you sure you want to delete ${product.name}?`)) {
       setProducts(products.filter((p) => p.id !== product.id));
     }
@@ -129,7 +138,6 @@ const Catalog = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Calculate status based on stock
     let status = "Active";
     const stockNum = parseInt(formData.stock);
     if (stockNum === 0) {
@@ -139,7 +147,6 @@ const Catalog = () => {
     }
 
     if (currentProduct) {
-      // Update existing product
       setProducts(
         products.map((p) =>
           p.id === currentProduct.id
@@ -156,7 +163,6 @@ const Catalog = () => {
         )
       );
     } else {
-      // Add new product
       const newId = Math.max(...products.map((p) => p.id), 0) + 1;
       setProducts([
         ...products,

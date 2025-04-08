@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import DataTable from "@/components/common/DataTable";
@@ -6,9 +5,24 @@ import PageHeader from "@/components/common/PageHeader";
 import FormModal from "@/components/common/FormModal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
-const initialUsers = [
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  lastLogin: string;
+}
+
+const initialUsers: User[] = [
   {
     id: 1,
     name: "John Doe",
@@ -52,9 +66,9 @@ const initialUsers = [
 ];
 
 const Users = () => {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState<User[]>(initialUsers);
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -101,7 +115,7 @@ const Users = () => {
     setModalOpen(true);
   };
 
-  const handleEdit = (user: any) => {
+  const handleEdit = (user: User) => {
     setCurrentUser(user);
     setFormData({
       name: user.name,
@@ -114,7 +128,7 @@ const Users = () => {
     setModalOpen(true);
   };
 
-  const handleDelete = (user: any) => {
+  const handleDelete = (user: User) => {
     if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
       setUsers(users.filter((u) => u.id !== user.id));
     }
@@ -122,6 +136,10 @@ const Users = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
     setFormData({ ...formData, [name]: value });
   };
 
@@ -218,28 +236,28 @@ const Users = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="role">Role</Label>
-              <Select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleInputChange}
-              >
-                <option value="Admin">Admin</option>
-                <option value="Manager">Manager</option>
-                <option value="User">User</option>
+              <Select name="role" value={formData.role} onValueChange={(value) => handleSelectChange("role", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Admin">Admin</SelectItem>
+                  <SelectItem value="Manager">Manager</SelectItem>
+                  <SelectItem value="User">User</SelectItem>
+                </SelectContent>
               </Select>
             </div>
             <div>
               <Label htmlFor="status">Status</Label>
-              <Select
-                id="status"
-                name="status"
-                value={formData.status}
-                onChange={handleInputChange}
-              >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="Pending">Pending</option>
+              <Select name="status" value={formData.status} onValueChange={(value) => handleSelectChange("status", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Inactive">Inactive</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                </SelectContent>
               </Select>
             </div>
           </div>
